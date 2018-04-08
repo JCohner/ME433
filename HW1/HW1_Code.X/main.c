@@ -60,7 +60,7 @@ int main() {
     TRISBbits.TRISB4 = 0; // B4 is output 
     TRISAbits.TRISA4 = 1; // A4 is input
     
-    LATBbits.LATB4 = 1;   // B4 is low
+    LATBbits.LATB4 = 1; 
     
     while(1) {
         /*
