@@ -61,22 +61,28 @@ int main() {
     TRISAbits.TRISA4 = 1; // A4 is input
     
     LATBbits.LATB4 = 1; 
-    
+   
     while(1) {
-        /*
         // use _CP0_SET_COUNT(0) and _CP0_GET_COUNT() to test the PIC timing
         // remember the core timer runs at half the sysclk
         LATBbits.LATB4 = 1;   // B4 is low
         _CP0_SET_COUNT(0);
         while (_CP0_GET_COUNT() < 12000){
-            ;
+            if (PORTAbits.RA4 == 0){
+                while (PORTAbits.RA4 == 0) {
+                    ;
+                }
+            }
         }
         
         LATBbits.LATB4 = 0; 
         _CP0_SET_COUNT(0);
         while (_CP0_GET_COUNT() < 12000){
-            ;
-        }
-       */ 
+            if (PORTAbits.RA4 == 0){
+                while (PORTAbits.RA4 == 0) {
+                    ;
+                }
+            }
+        } 
     }
 }
