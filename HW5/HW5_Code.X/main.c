@@ -81,8 +81,17 @@ int main() {
   __builtin_enable_interrupts();  // INT step 7: enable interrupts at CPU
     
     i2c_init();
+    init_expander();
+    
+    unsigned char button_state;
     
     while(1) {
+        button_state = (get_expander() & 0x80);
         
+        if(button_state){
+            set_expander(0,1);
+        } else  {
+            set_expander(0,0);
+        }
     }
 }

@@ -3,8 +3,8 @@
 
 void i2c_init(void);
 void init_expander(void);
-void set_expander(char pin, char level);
-char get_expander(void);
+void set_expander(char pin, char level); 
+unsigned char get_expander(void);
 
 
 void i2c_master_start(void);              // send a START signal

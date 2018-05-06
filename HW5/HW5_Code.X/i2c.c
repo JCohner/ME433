@@ -3,6 +3,9 @@
 #include "i2c.h"
 #include<sys/attribs.h>  // __ISR macro
 
+#define WRITE_ADDRESS 0b01000000
+#define READ_ADDRESS 0b01000001
+
 // I2C Master utilities, 100 kHz, using polling rather than interrupts
 // The functions must be callled in the correct order as per the I2C protocol
 // Change I2C1 to the I2C channel you are using
@@ -10,14 +13,54 @@
 
 void i2c_init(void) {
 //Turn off primary functionality so B3 can be SCL2 and B2 SDA2     
-ANSELBbits.ANSB2 = 0;
-ANSELBbits.ANSB3 = 0;
+ANSELBbits.ANSB2 = 0; //turn off analog
+ANSELBbits.ANSB3 = 0; //turn off analog
 
 I2C2BRG = 0x03A;            // I2CBRG = [1/(2*Fsck) - PGD]*Pblck - 2
                                     // look up PGD for your PIC32
 I2C2CONbits.ON = 1;               // turn on the I2C1 module
 }
 
+void set_expander(char pin, char level){
+    i2c_master_start();
+    i2c_master_send(WRITE_ADDRESS);
+    i2c_master_send(0x0A); //LAT reg
+    
+    unsigned char pin_info;
+    
+    pin_info = (level & 0x01) << pin;
+    i2c_master_send(pin_info);
+    i2c_master_stop();
+}
+unsigned char get_expander(void){
+    i2c_master_start();
+    
+    i2c_master_send(WRITE_ADDRESS);
+    i2c_master_send(0x09);
+    i2c_master_restart();
+    
+    i2c_master_send(READ_ADDRESS);
+    unsigned char gpio_state = i2c_master_recv();
+    i2c_master_stop();
+    
+    return gpio_state;
+}
+
+void init_expander(void){
+    i2c_master_start(); //S
+    i2c_master_send(WRITE_ADDRESS); //OP + W
+    i2c_master_send(0x00); //iodir REG ADDR
+    i2c_master_send(0xFE); //data value
+    i2c_master_stop();
+    
+    /*
+    i2c_master_start();
+    i2c_master_send(WRITE_ADDRESS); //OP + W
+    i2c_master_send(0x0A); //GPIO LAT register
+    i2c_master_send(0x01); //data to put to register
+    i2c_master_stop();
+     * */
+}
 // Start a transmission on the I2C bus
 void i2c_master_start(void) {
     I2C2CONbits.SEN = 1;            // send the start bit
