@@ -127,8 +127,8 @@ int main() {
         LCD_drawAccelBarHoriz(xNewAccel,MAGENTA, BLACK);
         LCD_drawAccelBarVert(zNewAccel,MAGENTA,BLACK);
         
-        //_CP0_SET_COUNT(0);
-        //while (_CP0_GET_COUNT() < 120000){;}
+        _CP0_SET_COUNT(0);
+        while (_CP0_GET_COUNT() < 1200000){;}
         
     }
 }
