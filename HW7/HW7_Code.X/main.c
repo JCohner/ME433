@@ -98,15 +98,9 @@ int main() {
     
     while(1) {
         int ii;
-        ///read_IMU(imu_data);
-        //normalize 5th and 6th readings to get x and y accel values
-        
         
         xOldAccel = xNewAccel;
         zOldAccel = zNewAccel;
-        
-        
-        //read_A(accels);
         
         xNewAccel = 64 + ((((float) read_Xaccel()) / 16384.0) * 64) ;
         zNewAccel = 80 + ((((float) read_Zaccel()) / 16384.0) * (-80));
@@ -114,15 +108,11 @@ int main() {
         //xNewAccel = ((((float) imu_data[4]) / 32768.0) * 100); //normalize to 64 //possibly scale up to 128 because will never experience 2gs
         //yNewAccel = ((((float) imu_data[5]) / 32768.0) * 100); // normalize to 80 //possibly scale up to 160 because will never experience 2gs
         //LCD_drawAccelBarUpdate(xNewAccel, zNewAccel, xOldAccel, zOldAccel, CYAN, BLACK);
-        
-        
        
         sprintf(data_msg,"ax: %+5.5hd", xNewAccel);
         LCD_drawString(5,5, data_msg, CYAN, BLACK);
         sprintf(data_msg,"az: %+5.5hd", zNewAccel);
         LCD_drawString(5,13, data_msg, BLACK, WHITE);
-        
-        
         
         LCD_drawAccelBarHoriz(xNewAccel,MAGENTA, BLACK);
         LCD_drawAccelBarVert(zNewAccel,MAGENTA,BLACK);
