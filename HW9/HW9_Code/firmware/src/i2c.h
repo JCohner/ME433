@@ -8,9 +8,7 @@ void read_A(short * accels);
 unsigned char read_WHOAMI(void);
 short read_Xaccel(void);
 short read_Zaccel(void);
-short read_Xgyro(void);
-short read_Ygyro(void);
-short read_Zgyro(void);
+
 
 
 void set_expander(char pin, char level); 
