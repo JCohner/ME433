@@ -452,7 +452,7 @@ void APP_Tasks(void) {
              * The isReadComplete flag gets updated in the CDC event handler. */
               
              /* WAIT FOR 5HZ TO PASS OR UNTIL A LETTER IS RECEIVED */
-            if (appData.isReadComplete || _CP0_GET_COUNT() - startTime > (48000000 / 2 / 5)) {
+            if (appData.isReadComplete || _CP0_GET_COUNT() - startTime > (48000000 / 2 / 5)) { //was 5
                 appData.state = APP_STATE_SCHEDULE_WRITE;
             }
 
