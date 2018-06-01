@@ -74,22 +74,6 @@ void read_IMU(short * data_array) {
     return;
 }
 
-/*
-void read_A(short * accels){   
-   short imu_data[7];
-   int ii;
-   for (ii = 0; ii < 10; ++ii){
-      read_IMU(imu_data);
-      accels[0] += (short)((float) imu_data[4] / 10.0); //X_ACCEL
-      accels[1] += (short)((float) imu_data[5] / 10.0); //Y_ACCEL
-      _CP0_SET_COUNT(0);
-      while (_CP0_GET_COUNT() < 1200000){;}
-   }
-   
-   return;
-}
-*/
-
 short read_Xaccel(void){
     i2c_master_start();
     i2c_master_send(WRITE_ADDRESS);
@@ -104,20 +88,75 @@ short read_Xaccel(void){
     short x_accel_data = (x_accel_data_high << 8) | x_accel_data_low;
     return x_accel_data;
 }
-
+short read_Yaccel(void){
+    i2c_master_start();
+    i2c_master_send(WRITE_ADDRESS);
+    i2c_master_send(0x2A);
+    i2c_master_restart();
+    i2c_master_send(READ_ADDRESS);
+    unsigned char x_accel_data_low = i2c_master_recv();
+    i2c_master_ack(0);
+    unsigned char x_accel_data_high = i2c_master_recv();
+    i2c_master_ack(1);
+    i2c_master_stop();
+    short x_accel_data = (x_accel_data_high << 8) | x_accel_data_low;
+    return x_accel_data;
+}
 short read_Zaccel(void){
     i2c_master_start();
     i2c_master_send(WRITE_ADDRESS);
     i2c_master_send(0x2C);
     i2c_master_restart();
     i2c_master_send(READ_ADDRESS);
-    unsigned char z_accel_data_low = i2c_master_recv();
+    unsigned char x_accel_data_low = i2c_master_recv();
     i2c_master_ack(0);
-    unsigned char z_accel_data_high = i2c_master_recv();
+    unsigned char x_accel_data_high = i2c_master_recv();
     i2c_master_ack(1);
     i2c_master_stop();
-    short z_accel_data = (z_accel_data_high << 8) | z_accel_data_low;
-    return z_accel_data;
+    short x_accel_data = (x_accel_data_high << 8) | x_accel_data_low;
+    return x_accel_data;
+}
+short read_Xgyro(void){
+    i2c_master_start();
+    i2c_master_send(WRITE_ADDRESS);
+    i2c_master_send(0x22);
+    i2c_master_restart();
+    i2c_master_send(READ_ADDRESS);
+    unsigned char x_accel_data_low = i2c_master_recv();
+    i2c_master_ack(0);
+    unsigned char x_accel_data_high = i2c_master_recv();
+    i2c_master_ack(1);
+    i2c_master_stop();
+    short x_accel_data = (x_accel_data_high << 8) | x_accel_data_low;
+    return x_accel_data;
+}
+short read_Ygyro(void){
+    i2c_master_start();
+    i2c_master_send(WRITE_ADDRESS);
+    i2c_master_send(0x24);
+    i2c_master_restart();
+    i2c_master_send(READ_ADDRESS);
+    unsigned char x_accel_data_low = i2c_master_recv();
+    i2c_master_ack(0);
+    unsigned char x_accel_data_high = i2c_master_recv();
+    i2c_master_ack(1);
+    i2c_master_stop();
+    short x_accel_data = (x_accel_data_high << 8) | x_accel_data_low;
+    return x_accel_data;
+}
+short read_Zgyro(void){
+    i2c_master_start();
+    i2c_master_send(WRITE_ADDRESS);
+    i2c_master_send(0x26);
+    i2c_master_restart();
+    i2c_master_send(READ_ADDRESS);
+    unsigned char x_accel_data_low = i2c_master_recv();
+    i2c_master_ack(0);
+    unsigned char x_accel_data_high = i2c_master_recv();
+    i2c_master_ack(1);
+    i2c_master_stop();
+    short x_accel_data = (x_accel_data_high << 8) | x_accel_data_low;
+    return x_accel_data;
 }
 void init_imu(void){
     i2c_master_start(); //S

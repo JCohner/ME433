@@ -342,6 +342,7 @@ void APP_Initialize(void) {
     See prototype in app.h.
  */
 
+bool isPressed = 0;
 void APP_Tasks(void) {
     /* Update the application state machine based
      * on the current state */
@@ -361,9 +362,6 @@ void APP_Tasks(void) {
                 /* The Device Layer is not ready to be opened. We should try
                  * again later. */
             }
-            
-            
-            
             
             /*Configure 5hz blinker*/
             TRISBbits.TRISB4 = 0; // B4 is output 
@@ -421,6 +419,19 @@ void APP_Tasks(void) {
                         /* YOU COULD PUT AN IF STATEMENT HERE TO DETERMINE WHICH LETTER
                         WAS RECEIVED (USUALLY IT IS THE NULL CHARACTER BECAUSE NOTHING WAS
                       TYPED) */
+                
+                char init_msg[50];
+                if(appData.readBuffer[0] == 'r'){
+                    isPressed = 1;
+                    sprintf(init_msg,"Got an R!!!");
+                    LCD_drawString(5,5, init_msg, BLACK, WHITE);
+                    break;
+                } else if (appData.readBuffer[0] == NULL){
+                    isPressed = 0;
+                    sprintf(init_msg,"Waiting...");
+                    LCD_drawString(5,5, init_msg, BLACK, WHITE);
+                    break;
+                }
 
                 if (appData.readTransferHandle == USB_DEVICE_CDC_TRANSFER_HANDLE_INVALID) {
                     appData.state = APP_STATE_ERROR;
@@ -431,7 +442,6 @@ void APP_Tasks(void) {
             break;
 
         case APP_STATE_WAIT_FOR_READ_COMPLETE:
-            break;
         case APP_STATE_CHECK_TIMER:
 
             if (APP_StateReset()) {
@@ -440,7 +450,7 @@ void APP_Tasks(void) {
 
             /* Check if a character was received or a switch was pressed.
              * The isReadComplete flag gets updated in the CDC event handler. */
-
+              
              /* WAIT FOR 5HZ TO PASS OR UNTIL A LETTER IS RECEIVED */
             if (appData.isReadComplete || _CP0_GET_COUNT() - startTime > (48000000 / 2 / 5)) {
                 appData.state = APP_STATE_SCHEDULE_WRITE;
@@ -461,34 +471,65 @@ void APP_Tasks(void) {
             appData.writeTransferHandle = USB_DEVICE_CDC_TRANSFER_HANDLE_INVALID;
             appData.isWriteComplete = false;
             appData.state = APP_STATE_WAIT_FOR_WRITE_COMPLETE;
-
-            /* PUT THE TEXT YOU WANT TO SEND TO THE COMPUTER IN dataOut
-            AND REMEMBER THE NUMBER OF CHARACTERS IN len */
-            /* THIS IS WHERE YOU CAN READ YOUR IMU, PRINT TO THE LCD, ETC */
-            short gyroX = read_Xgyro();
-            short gyroY = read_Ygyro();
-            short gyroZ = read_Zgyro();
+            if (isPressed){
+                while (i < 100){
+                    /* PUT THE TEXT YOU WANT TO SEND TO THE COMPUTER IN dataOut
+                    AND REMEMBER THE NUMBER OF CHARACTERS IN len */
+                    /* THIS IS WHERE YOU CAN READ YOUR IMU, PRINT TO THE LCD, ETC */
+                    short gyroX = read_Xgyro();
+                    short gyroY = read_Ygyro();
+                    short gyroZ = read_Zgyro();
+                    //short accelX = read_Xaccel();
+                    //short accelY = read_Xaccel();
+                    //short accelZ = read_Xaccel();
+            
+                    /*LCD Debugging*/
+                    char data_msg[50];
+                    LCD_clearScreen(WHITE);
+                    sprintf(data_msg,"gx: %d", gyroX);
+                    LCD_drawString(5,5, data_msg, WHITE, BLACK);
+                    sprintf(data_msg,"gy: %d", gyroY);
+                    LCD_drawString(5,13, data_msg, BLACK, WHITE);
+                    sprintf(data_msg,"gz: %d", gyroZ);
+                    LCD_drawString(5,21, data_msg, BLACK, WHITE);
             
             
-            
-            
-            
-            len = sprintf(dataOut, "%d\r\n", i);
-            i++; // increment the index so we see a change in the text
+                    len = sprintf(dataOut, "%d %d %d %d\r\n",i, gyroX, gyroY, gyroZ);
+                    i++; // increment the index so we see a change in the text
+                    
+                    USB_DEVICE_CDC_Write(USB_DEVICE_CDC_INDEX_0,
+                        &appData.writeTransferHandle, dataOut, len,
+                        USB_DEVICE_CDC_TRANSFER_FLAGS_DATA_COMPLETE);
+                }
+                i = 0;
+                isPressed = 0;
+                break;
+            } else {
+                len = 1;
+                dataOut[0] = 0;
+                USB_DEVICE_CDC_Write(USB_DEVICE_CDC_INDEX_0,
+                        &appData.writeTransferHandle, dataOut, len,
+                        USB_DEVICE_CDC_TRANSFER_FLAGS_DATA_COMPLETE);
+            }
             /* IF A LETTER WAS RECEIVED, ECHO IT BACK SO THE USER CAN SEE IT */
+            /*
             if (appData.isReadComplete) {
                 USB_DEVICE_CDC_Write(USB_DEVICE_CDC_INDEX_0,
                         &appData.writeTransferHandle,
                         appData.readBuffer, 1,
                         USB_DEVICE_CDC_TRANSFER_FLAGS_DATA_COMPLETE);
             }
+            */
             /* ELSE SEND THE MESSAGE YOU WANTED TO SEND */
+            /*
             else {
                 USB_DEVICE_CDC_Write(USB_DEVICE_CDC_INDEX_0,
                         &appData.writeTransferHandle, dataOut, len,
                         USB_DEVICE_CDC_TRANSFER_FLAGS_DATA_COMPLETE);
                 startTime = _CP0_GET_COUNT(); // reset the timer for acurate delays
             }
+            */
+            startTime = _CP0_GET_COUNT(); // reset the timer for acurate delays
             break;
 
         case APP_STATE_WAIT_FOR_WRITE_COMPLETE:
