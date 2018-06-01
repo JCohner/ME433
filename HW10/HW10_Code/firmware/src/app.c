@@ -49,6 +49,7 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
 #include "app.h"
 #include "ST7735.h"
 #include "i2c.h"
+#include "dsp.h"
 #include <stdio.h>
 #include <xc.h>
 
@@ -472,18 +473,18 @@ void APP_Tasks(void) {
             appData.isWriteComplete = false;
             appData.state = APP_STATE_WAIT_FOR_WRITE_COMPLETE;
             if (isPressed){
+                short rawGyroZ;
+                float MAFGyroZ;
+                float IIRGyroZ;
+                float FIRGyroZ;
+                struct Queue * MAF_Queue = createQueue(10);
                 while (i < 100){
-                    /* PUT THE TEXT YOU WANT TO SEND TO THE COMPUTER IN dataOut
-                    AND REMEMBER THE NUMBER OF CHARACTERS IN len */
-                    /* THIS IS WHERE YOU CAN READ YOUR IMU, PRINT TO THE LCD, ETC */
-                    short gyroX = read_Xgyro();
-                    short gyroY = read_Ygyro();
-                    short gyroZ = read_Zgyro();
-                    //short accelX = read_Xaccel();
-                    //short accelY = read_Xaccel();
-                    //short accelZ = read_Xaccel();
-            
-                    /*LCD Debugging*/
+                    rawGyroZ = read_Zgyro();
+                    enqueue(MAF_Queue, rawGyroZ);
+                    if(isFull(MAF_Queue)){
+                        MAFGyroZ = MAF(MAF_Queue);
+                    }
+                    /*LCD Debugging
                     char data_msg[50];
                     LCD_clearScreen(WHITE);
                     sprintf(data_msg,"gx: %d", gyroX);
@@ -492,9 +493,9 @@ void APP_Tasks(void) {
                     LCD_drawString(5,13, data_msg, BLACK, WHITE);
                     sprintf(data_msg,"gz: %d", gyroZ);
                     LCD_drawString(5,21, data_msg, BLACK, WHITE);
+                    */
             
-            
-                    len = sprintf(dataOut, "%d %d %d %d\r\n",i, gyroX, gyroY, gyroZ);
+                    len = sprintf(dataOut, "%d %d %f %f %f\r\n",i, rawGyroZ, MAFGyroZ, IIRGyroZ, FIRGyroZ);
                     i++; // increment the index so we see a change in the text
                     
                     USB_DEVICE_CDC_Write(USB_DEVICE_CDC_INDEX_0,
