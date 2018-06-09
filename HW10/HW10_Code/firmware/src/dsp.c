@@ -3,16 +3,22 @@
 #include "dsp.h"
 #include <stdio.h>
 #include <limits.h>
+#include "ST7735.h"
  
 // function to create a queue of given capacity. 
 // It initializes size of queue as 0
 struct Queue* createQueue(unsigned capacity)
 {
-    struct Queue* queue = (struct Queue*) malloc(sizeof(struct Queue));
+    struct Queue* queue;// = (struct Queue*) malloc(sizeof(struct Queue));
     queue->capacity = capacity;
-    queue->front = queue->size = 0; 
-    queue->rear = capacity - 1;  // This is important, see the enqueue
-    queue->array = (int*) malloc(queue->capacity * sizeof(int));
+    queue->front = queue->size = queue->rear = 0; 
+    //queue->rear = capacity - 1;  // This is important, see the enqueue starts by pointing to array el last
+    int storage[queue->capacity];
+    int i;
+    for (i = 0; i < queue->capacity; ++i){
+        storage[i] = 0;
+    }
+    queue->array =  storage; //original implementation //(int*) malloc(queue->capacity * sizeof(int));
     return queue;
 }
  
@@ -24,16 +30,45 @@ int isFull(struct Queue* queue)
 int isEmpty(struct Queue* queue)
 {  return (queue->size == 0); }
  
+float MAFnqueue(struct Queue* queue, int item){
+  
+  char data_msg[50];
+  LCD_clearScreen(WHITE);
+  sprintf(data_msg,"Made it here dog");
+  LCD_drawString(5,5, data_msg, WHITE, BLACK);  
+  queue->array[queue->rear] = item;
+  
+  queue->rear = (queue->rear + 1)%queue->capacity;
+  int i;
+  float average; 
+  for (i = 0; i < queue->capacity; ++i){
+    average += *(queue->array + i);
+  }
+  average = average/((float) queue->size);
+  return average;
+}
+
 // Function to add an item to the queue.  
 // It changes rear and size
 void enqueue(struct Queue* queue, int item)
 {
-    if (isFull(queue))
+    /*
+    if (isEmpty(queue)){
+        //adding first element
+        queue->array[queue->rear] = item;
+        queue->rear = 1;
+        queue->size = 1;
         return;
-    queue->rear = (queue->rear + 1)%queue->capacity;
-    queue->array[queue->rear] = item;
-    queue->size = queue->size + 1;
-    //printf("%d enqueued to queue\n", item);
+    } else if (queue->rear == queue->front){
+        queue->front = queue->front + 1;
+        queue->rear = queue->rear + 1;
+        
+    } else {
+        queue->rear = (queue->rear + 1)%queue->capacity; //increment locational pointer to rear modulo with size
+        queue->array[queue->rear] = item; //
+        queue->size = queue->size + 1;
+     * 
+    }*/
 }
  
 // Function to remove an item from queue. 
@@ -66,8 +101,13 @@ int rear(struct Queue* queue)
 
 float MAF(struct Queue* queue){
     float average = 0;
-    while(!(isEmpty(queue))){
-        average += dequeue(queue) / queue->capacity;
+    
+    unsigned lim = queue->capacity;
+    int ii;
+    for (ii = 0; ii
+            < lim; ++ii){
+        average += *(queue->array + ii);
     }
+    return average;
 }
 

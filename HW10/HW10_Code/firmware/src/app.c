@@ -427,7 +427,7 @@ void APP_Tasks(void) {
                     sprintf(init_msg,"Got an R!!!");
                     LCD_drawString(5,5, init_msg, BLACK, WHITE);
                     break;
-                } else if (appData.readBuffer[0] == NULL){
+                } else if (appData.readBuffer[0] == '\0'){
                     isPressed = 0;
                     sprintf(init_msg,"Waiting...");
                     LCD_drawString(5,5, init_msg, BLACK, WHITE);
@@ -468,34 +468,39 @@ void APP_Tasks(void) {
             }
 
             /* Setup the write */
-
+            char data_msg[50];
+            LCD_clearScreen(WHITE);
+            sprintf(data_msg,"Entering data phase");
+            LCD_drawString(5,5, data_msg, WHITE, BLACK);
             appData.writeTransferHandle = USB_DEVICE_CDC_TRANSFER_HANDLE_INVALID;
             appData.isWriteComplete = false;
             appData.state = APP_STATE_WAIT_FOR_WRITE_COMPLETE;
-            if (isPressed){
+            if (isPressed == 1){
+                LCD_clearScreen(WHITE);
+                sprintf(data_msg,"R has been pressed");
+                LCD_drawString(5,5, data_msg, WHITE, BLACK);
                 short rawGyroZ;
-                float MAFGyroZ;
+                float MAFGyroZ = 0;
                 float IIRGyroZ;
                 float FIRGyroZ;
                 struct Queue * MAF_Queue = createQueue(10);
                 while (i < 100){
                     rawGyroZ = read_Zgyro();
-                    enqueue(MAF_Queue, rawGyroZ);
-                    if(isFull(MAF_Queue)){
-                        MAFGyroZ = MAF(MAF_Queue);
-                    }
-                    /*LCD Debugging
-                    char data_msg[50];
+                    MAFGyroZ = MAFnqueue(MAF_Queue,rawGyroZ);
+                    
+                    //enqueue(MAF_Queue, rawGyroZ);
+                    //MAFGyroZ = MAF(MAF_Queue);
+                    //LCD Debugging
+                    /*
                     LCD_clearScreen(WHITE);
-                    sprintf(data_msg,"gx: %d", gyroX);
+                    sprintf(data_msg,"raw gz: %d", rawGyroZ);
                     LCD_drawString(5,5, data_msg, WHITE, BLACK);
-                    sprintf(data_msg,"gy: %d", gyroY);
-                    LCD_drawString(5,13, data_msg, BLACK, WHITE);
-                    sprintf(data_msg,"gz: %d", gyroZ);
-                    LCD_drawString(5,21, data_msg, BLACK, WHITE);
-                    */
+                     */
+                    //sprintf(data_msg,"MAF gz: %d", MAFGyroZ);
+                    //LCD_drawString(5,13, data_msg, BLACK, WHITE);
+                    
             
-                    len = sprintf(dataOut, "%d %d %f %f %f\r\n",i, rawGyroZ, MAFGyroZ, IIRGyroZ, FIRGyroZ);
+                    len = sprintf(dataOut, "%d %d\r\n",i, rawGyroZ); //, IIRGyroZ, FIRGyroZ
                     i++; // increment the index so we see a change in the text
                     
                     USB_DEVICE_CDC_Write(USB_DEVICE_CDC_INDEX_0,
@@ -504,8 +509,10 @@ void APP_Tasks(void) {
                 }
                 i = 0;
                 isPressed = 0;
-                break;
             } else {
+                LCD_clearScreen(WHITE);
+                sprintf(data_msg,"R has  NOT been pressed");
+                LCD_drawString(5,5, data_msg, WHITE, BLACK);
                 len = 1;
                 dataOut[0] = 0;
                 USB_DEVICE_CDC_Write(USB_DEVICE_CDC_INDEX_0,
@@ -513,14 +520,14 @@ void APP_Tasks(void) {
                         USB_DEVICE_CDC_TRANSFER_FLAGS_DATA_COMPLETE);
             }
             /* IF A LETTER WAS RECEIVED, ECHO IT BACK SO THE USER CAN SEE IT */
-            /*
+            
             if (appData.isReadComplete) {
                 USB_DEVICE_CDC_Write(USB_DEVICE_CDC_INDEX_0,
                         &appData.writeTransferHandle,
                         appData.readBuffer, 1,
                         USB_DEVICE_CDC_TRANSFER_FLAGS_DATA_COMPLETE);
             }
-            */
+            
             /* ELSE SEND THE MESSAGE YOU WANTED TO SEND */
             /*
             else {
@@ -543,6 +550,9 @@ void APP_Tasks(void) {
              * flag gets updated in the CDC event handler */
 
             if (appData.isWriteComplete == true) {
+                //LCD_clearScreen(WHITE);
+                //sprintf(data_msg,"Lets loop");
+                //LCD_drawString(5,5, data_msg, WHITE, BLACK);
                 appData.state = APP_STATE_SCHEDULE_READ;
             }
 

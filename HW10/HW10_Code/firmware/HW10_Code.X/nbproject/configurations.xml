@@ -22,9 +22,9 @@
           </logicalFolder>
         </logicalFolder>
         <itemPath>../src/ST7735.h</itemPath>
-        <itemPath>../src/app.h</itemPath>
         <itemPath>../src/dsp.h</itemPath>
         <itemPath>../src/i2c.h</itemPath>
+        <itemPath>../src/app.h</itemPath>
       </logicalFolder>
       <logicalFolder name="f1" displayName="framework" projectFiles="true">
         <logicalFolder name="f1" displayName="driver" projectFiles="true">
@@ -135,11 +135,11 @@
             <itemPath>../src/system_config/default/system_tasks.c</itemPath>
           </logicalFolder>
         </logicalFolder>
-        <itemPath>../src/app.c</itemPath>
-        <itemPath>../src/main.c</itemPath>
         <itemPath>../src/ST7735.c</itemPath>
         <itemPath>../src/dsp.c</itemPath>
         <itemPath>../src/i2c.c</itemPath>
+        <itemPath>../src/main.c</itemPath>
+        <itemPath>../src/app.c</itemPath>
       </logicalFolder>
       <logicalFolder name="f1" displayName="framework" projectFiles="true">
         <logicalFolder name="f2" displayName="driver" projectFiles="true">
@@ -344,7 +344,7 @@
       <C32Global>
         <property key="common-include-directories" value=""/>
         <property key="gp-relative-option" value=""/>
-        <property key="legacy-libc" value="false"/>
+        <property key="legacy-libc" value="true"/>
         <property key="mdtcm" value=""/>
         <property key="mitcm" value=""/>
         <property key="mstacktcm" value="false"/>
@@ -389,6 +389,7 @@
         <property key="UART1" value="true"/>
         <property key="UART2" value="true"/>
         <property key="USB" value="true"/>
+        <property key="firmware.download.all" value="false"/>
         <property key="hwtoolclock.frcindebug" value="false"/>
         <property key="memories.aux" value="false"/>
         <property key="memories.bootflash" value="true"/>

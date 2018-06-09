@@ -10,6 +10,7 @@ struct Queue
 };
 
 struct Queue* createQueue(unsigned capacity);
+float MAFnqueue(struct Queue* queue, int item);
 int isFull(struct Queue* queue);
 int isEmpty(struct Queue* queue);
 void enqueue(struct Queue* queue, int item);

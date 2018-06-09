@@ -1,3 +1,4 @@
 build/default/production/_ext/1360937237/dsp.o:  \
 ../src/dsp.c  \
-../src/dsp.h 
+../src/dsp.h  \
+ ../src/ST7735.h 

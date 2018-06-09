@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">HelloWorldSliderBar</string>
+    <string name="init_val">Configure Particle</string>
+</resources>

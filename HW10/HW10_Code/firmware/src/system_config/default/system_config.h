@@ -66,30 +66,37 @@ extern "C" {
 // *****************************************************************************
 /* Common System Service Configuration Options
 */
-#define SYS_VERSION_STR           "1.10"
-#define SYS_VERSION               11000
+#define SYS_VERSION_STR           "2.05"
+#define SYS_VERSION               20500
 
 // *****************************************************************************
 /* Clock System Service Configuration Options
 */
 #define SYS_CLK_FREQ                        48000000ul
 #define SYS_CLK_BUS_PERIPHERAL_1            48000000ul
-#define SYS_CLK_UPLL_BEFORE_DIV2_FREQ       63999984ul
+#define SYS_CLK_UPLL_BEFORE_DIV2_FREQ       96000000ul
 #define SYS_CLK_CONFIG_PRIMARY_XTAL         8000000ul
-#define SYS_CLK_CONFIG_SECONDARY_XTAL       0ul
+#define SYS_CLK_CONFIG_SECONDARY_XTAL       32768ul
    
 /*** Interrupt System Service Configuration ***/
 #define SYS_INT                     true
 
 /*** Ports System Service Configuration ***/
+#define SYS_PORT_A_ANSEL        0xFFFF
+#define SYS_PORT_A_TRIS         0xFFFF
+#define SYS_PORT_A_LAT          0x0000
+#define SYS_PORT_A_ODC          0x0000
+#define SYS_PORT_A_CNPU         0x0000
+#define SYS_PORT_A_CNPD         0x0000
+#define SYS_PORT_A_CNEN         0x0000
 
-#define SYS_PORT_B_ANSEL        0xac1f
-#define SYS_PORT_B_TRIS         0xefbf
-#define SYS_PORT_B_LAT          0x0
-#define SYS_PORT_B_ODC          0x0
-#define SYS_PORT_B_CNPU         0x0
-#define SYS_PORT_B_CNPD         0x0
-#define SYS_PORT_B_CNEN         0x0
+#define SYS_PORT_B_ANSEL        0xFC5F
+#define SYS_PORT_B_TRIS         0xFFFF
+#define SYS_PORT_B_LAT          0x0000
+#define SYS_PORT_B_ODC          0x0000
+#define SYS_PORT_B_CNPU         0x0000
+#define SYS_PORT_B_CNPD         0x0000
+#define SYS_PORT_B_CNEN         0x0000
 
 
 // *****************************************************************************
