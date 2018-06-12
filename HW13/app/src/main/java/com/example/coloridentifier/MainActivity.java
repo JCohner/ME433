@@ -80,7 +80,7 @@ public class MainActivity extends Activity implements TextureView.SurfaceTexture
         Camera.Parameters parameters = mCamera.getParameters();
         parameters.setPreviewSize(640, 480);
         parameters.setFocusMode(Camera.Parameters.FOCUS_MODE_INFINITY); // no autofocusing
-        parameters.setAutoExposureLock(true); // keep the white balance constant
+        //parameters.setAutoExposureLock(true); // keep the white balance constant
         mCamera.setParameters(parameters);
         mCamera.setDisplayOrientation(90); // rotate to portrait mode
 
@@ -117,7 +117,7 @@ public class MainActivity extends Activity implements TextureView.SurfaceTexture
                 bmp.getPixels(pixels, 0, bmp.getWidth(), 0, j, bmp.getWidth(), 1);
                 // in the row, see if there is more green than red
                 for (int i = 0; i < bmp.getWidth(); i++) {
-                    if ((green(pixels[i]) - red(pixels[i])) > thresh) {
+                    if (((green(pixels[i]) - red(pixels[i])) >thresh) && ((green(pixels[i]) - blue(pixels[i])) > thresh)) {
                         pixels[i] = rgb(0, 255, 0); // over write the pixel with pure green
                         // update the row
                         bmp.setPixels(pixels, 0, bmp.getWidth(), 0, j, bmp.getWidth(), 1);
