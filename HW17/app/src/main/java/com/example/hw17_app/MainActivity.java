@@ -59,9 +59,9 @@ public class MainActivity extends Activity implements TextureView.SurfaceTexture
 
         redThreshTextView = (TextView) findViewById(R.id.threshRed);
         redThreshTextView.setText("Set initial value");
-        blueThreshTextView = (TextView) findViewById(R.id.threshRed);
+        blueThreshTextView = (TextView) findViewById(R.id.threshBlue);
         blueThreshTextView.setText("Set initial value");
-        greenThreshTextView = (TextView) findViewById(R.id.threshRed);
+        greenThreshTextView = (TextView) findViewById(R.id.threshGreen);
         greenThreshTextView.setText("Set initial value");
 
         setRedControlListener();
@@ -134,7 +134,7 @@ public class MainActivity extends Activity implements TextureView.SurfaceTexture
                 bmp.getPixels(pixels, 0, bmp.getWidth(), 0, j, bmp.getWidth(), 1);
                 // in the row, see if there is more green than red
                 for (int i = 0; i < bmp.getWidth(); i++) {
-                    if (((green(pixels[i]) - red(pixels[i])) >thresh) && ((green(pixels[i]) - blue(pixels[i])) > thresh)) {
+                    if (((green(pixels[i]) - red(pixels[i])) >threshRed) && ((green(pixels[i]) - blue(pixels[i])) > threshGreen)) {
                         pixels[i] = rgb(0, 255, 0); // over write the pixel with pure green
                         // update the row
                         bmp.setPixels(pixels, 0, bmp.getWidth(), 0, j, bmp.getWidth(), 1);
@@ -142,15 +142,17 @@ public class MainActivity extends Activity implements TextureView.SurfaceTexture
                 }
             }
             */
+
             bmp.getPixels(pixels, 0, bmp.getWidth(), 0, 200, bmp.getWidth(), 1);
             int sum_mr = 0; // the sum of the mass times the radius
             int sum_m = 0; // the sum of the masses
             for (int i = 0; i < bmp.getWidth(); i++) {
-                if ( ((red(pixels[i]) - (green(pixels[i]) + blue(pixels[i]))/2) > -threshRed) && ((red(pixels[i]) - (green(pixels[i])+blue(pixels[i]))/2) < threshRed) && (red(pixels[i])  > threshGreen) ) {
-                    pixels[i] = rgb(1, 1, 1); // set the pixel to almost 100% black
-
+                if (((red(pixels[i]) - (green(pixels[i]))) > threshGreen) && ((red(pixels[i]) - blue(pixels[i])) > threshBlue)) {
+                    pixels[i] = rgb(0, 255, 0); // over write the pixel with pure green
+                    bmp.setPixels(pixels, 0, bmp.getWidth(), 0, 200, bmp.getWidth(), 1);
                     sum_m = sum_m + green(pixels[i])+red(pixels[i])+blue(pixels[i]);
                     sum_mr = sum_mr + (green(pixels[i])+red(pixels[i])+blue(pixels[i]))*i;
+
                 }
             }
             // only use the data if there were a few pixels identified, otherwise you might get a divide by 0 error
@@ -160,16 +162,16 @@ public class MainActivity extends Activity implements TextureView.SurfaceTexture
             else{
                 //COM = 0;
             }
+            // draw a circle at some position
+            float pos = ((float) sum_mr/ (float) sum_m);
+            canvas.drawCircle(pos, 200, 5, paint1); // x position, y position, diameter, color
 
+            // write the pos as text
+            canvas.drawText("pos = " + pos, 10, 200, paint1);
+            c.drawBitmap(bmp, 0, 0, null);
         }
 
-        // draw a circle at some position
-        int pos = 50;
-        canvas.drawCircle(pos, 240, 5, paint1); // x position, y position, diameter, color
 
-        // write the pos as text
-        canvas.drawText("pos = " + pos, 10, 200, paint1);
-        c.drawBitmap(bmp, 0, 0, null);
         mSurfaceHolder.unlockCanvasAndPost(c);
 
         // calculate the FPS to see how fast the code is running
