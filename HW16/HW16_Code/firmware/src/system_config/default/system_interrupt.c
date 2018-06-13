@@ -69,16 +69,81 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
 // *****************************************************************************
 // *****************************************************************************
 
- 
+
 void __ISR(_USB_1_VECTOR, ipl4AUTO) _IntHandlerUSBInstance0(void)
 {
     DRV_USBFS_Tasks_ISR(sysObj.drvUSBObject);
 }
+int count = 0;
+int counts_1;
+int counts_2;
+int counts_1_prev = 0;
+int counts_2_prev = 0;
+int s1;
+int s2;
+int r1 = 3;
+int r2 = 3;
+int e1;
+int e2;
+int eint1 = 0;
+int eint2 = 0;
+float u1;
+float u2;
+float kp1 = 1;
+float kp2 = 1;
+float ki1 = 1;
+float ki2 = 1;
 void __ISR(_TIMER_4_VECTOR, IPL4SOFT) Timer4ISR(void) {
   // code for PI control goes here
-  OC1RS = 1200;
-  OC4RS = 1200;
-  IFS0bits.T4IF = 0; // clear interrupt flag, last line
+  /*Encoder Counts Test*/
+  /*
+  if (count == 0){
+    OC1RS = 1200;
+    OC4RS = 1200;
+    count = 1;
+  }
+  
+  if (TMR5 > 7000) {
+    OC1RS = 0;
+  }
+  if (TMR3 > 7000) {
+    OC4RS = 0;
+  }
+  */
+    
+    counts_1 = TMR5;
+    counts_2 = TMR3;
+    
+    s1 = counts_1 - counts_1_prev;
+    s2 = counts_2 - counts_2_prev;
+    
+    /*PID Control */
+
+    e1 = r1 - s1;
+    e2 = r2 - s2;
+
+    eint1 = eint1 + e1;
+    eint2 = eint2 + e2;
+    
+    u1 = kp1 * e1 + ki1 * e1;
+    u2 = kp2 * e2 + ki2 * e2;
+    
+    if (u1 > 100) {
+        u1 = 100;
+    } else if (u1 < 0){
+        u1 = 0;
+    } else if (u2 > 100){
+        u2 = 100;
+    } else if (u2 < 0) {
+        u2 = 0;
+    }
+    
+    OC1RS = u1 * 2399;
+    OC4RS = u2 * 2399;
+    
+    counts_1_prev = counts_1;
+    counts_2_prev = counts_2;
+    IFS0bits.T4IF = 0; // clear interrupt flag, last line
 }
 /*******************************************************************************
  End of File
