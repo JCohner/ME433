@@ -117,7 +117,7 @@ void __ISR(_TIMER_4_VECTOR, IPL4SOFT) Timer4ISR(void) {
     s1 = counts_1 - counts_1_prev;
     s2 = counts_2 - counts_2_prev;
     
-    /*PID Control */
+    
 
     e1 = r1 - s1;
     e2 = r2 - s2;
@@ -143,6 +143,7 @@ void __ISR(_TIMER_4_VECTOR, IPL4SOFT) Timer4ISR(void) {
     
     counts_1_prev = counts_1;
     counts_2_prev = counts_2;
+    
     IFS0bits.T4IF = 0; // clear interrupt flag, last line
 }
 /*******************************************************************************
